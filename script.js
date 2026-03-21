@@ -191,6 +191,9 @@ ORDER BY sales_date DESC;`
       proofLine:
         "What this case shows: funnel, retention, repeat purchase, and campaign efficiency in one growth view.",
       stackLine: "SQL • Excel • Looker Studio",
+      liveDashboardUrl:
+        "https://lookerstudio.google.com/reporting/bbb09e83-d4d3-4614-82e1-dc8cee0249fa",
+      liveDashboardLabel: "Live Looker Dashboard",
       summary:
         "A growth-focused project that looks at how acquisition, conversion, retention, and category performance combine to shape e-commerce results.",
       problem:
@@ -450,7 +453,7 @@ ORDER BY event_date DESC;`
                 rel="noopener noreferrer"
                 aria-label="Open ${escapeHtml(project.liveDashboardLabel || "Live dashboard")} for ${escapeHtml(project.title)}"
               >
-                ${escapeHtml(project.liveDashboardLabel || "Live Dashboard")}
+                <strong>${escapeHtml(project.liveDashboardLabel || "Live Dashboard")}</strong>
               </a>
             `
           : "";
@@ -670,7 +673,7 @@ ORDER BY event_date DESC;`
             target="_blank"
             rel="noopener noreferrer"
           >
-            ${escapeHtml(project.liveDashboardLabel || "Open Live Dashboard")}
+            <strong>${escapeHtml(project.liveDashboardLabel || "Open Live Dashboard")}</strong>
           </a>
         `;
       } else {
