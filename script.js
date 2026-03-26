@@ -1,6 +1,105 @@
 document.addEventListener("DOMContentLoaded", () => {
   const projectsData = [
     {
+      id: "vexere-booking-ops",
+      domain: "Transport / Booking Operations",
+      title: "Vexere Booking & Operations Analytics",
+      shortDescription:
+        "Booking funnel, operator ranking, regional performance, cancellations, and daily KPI monitoring for intercity transport operations.",
+      hoverDescription:
+        "An operations analytics case built around booking funnel leakage, operator performance gaps, regional demand quality, and cancellation monitoring.",
+      businessQuestion:
+        "How can operations teams detect booking leakage, operator underperformance, and regional service issues early enough to intervene?",
+      proofLine:
+        "What this case shows: operational KPI design, funnel diagnosis, operator benchmarking, and action-oriented dashboard thinking.",
+      stackLine: "SQL • Python • Looker Studio",
+      liveDashboardUrl: "https://huy24vt.github.io/vexere-dashboard/",
+      liveDashboardLabel: "Live Dashboard",
+
+      summary:
+        "This project was designed as an operations-focused dashboard for an intercity transport booking platform. Instead of only tracking top-line bookings, the dashboard breaks performance into booking funnel health, operator ranking, regional conversion quality, cancellation behavior, and daily KPI movement. The goal is to help teams move from passive reporting to faster operational intervention.",
+
+      problem:
+        "Transport operations teams often see headline booking volume, but not always the operational causes underneath it. A decline in bookings may come from weaker top-of-funnel demand, poor operator conversion, rising cancellations, or a specific regional issue. Without a structured view across funnel, operator, and region, it becomes harder to identify the real bottleneck and prioritize action.",
+
+      architecture: [
+        "Structured the dashboard around three operational layers: booking funnel, operator performance, and regional performance",
+        "Connected daily KPI monitoring with diagnostic views so users can move from summary metrics to root-cause analysis",
+        "Used operator-level and region-level aggregation to compare performance quality, not only absolute volume",
+        "Designed the layout so operational teams can quickly spot whether the problem comes from demand, operator execution, or service reliability"
+      ],
+
+      parsingLogic: [
+        "Defined funnel stages consistently from search to successful booking so drop-off points could be compared over time",
+        "Standardized operator ranking logic using booking volume, conversion performance, and cancellation signals",
+        "Grouped performance by region to separate localized execution problems from broader system-wide changes",
+        "Prepared daily trend logic to highlight whether KPI movement was temporary noise or a sustained deterioration pattern"
+      ],
+
+      dataAccess: [
+        "Joined booking, search, operator, and regional performance tables into dashboard-ready marts",
+        "Created daily aggregated layers for fast KPI visualization and weekly patterns for operational review",
+        "Separated summary marts from diagnostic marts so overview charts stay clean while detail views remain actionable",
+        "Prepared reusable mart outputs for funnel analysis, operator benchmarking, and regional comparison"
+      ],
+
+      analyticsModules: [
+        "Booking Funnel: tracked user movement from search to booking completion and highlighted the largest leakage stage",
+        "Operator Ranking: compared operators on booking volume, conversion quality, and service outcome rather than raw volume alone",
+        "Regional Performance: evaluated bookings, revenue contribution, and operational quality by region",
+        "Cancellation Analysis: monitored cancellation rate and identified where reliability issues may be distorting final performance",
+        "Daily KPI Trend: surfaced movement in searches, bookings, conversion, completion, and cancellations for short-term monitoring"
+      ],
+
+      optimization: [
+        "Made the operator ranking chart more prominent so differences between operators are easier to interpret visually",
+        "Used a full-funnel view instead of a partial funnel to show the complete booking journey",
+        "Reduced visual overlap in regional charts so labels do not compete with legends and decrease readability",
+        "Focused the dashboard on operational diagnosis, not only presentation, so each chart points toward a follow-up action"
+      ],
+
+      outputLayer: [
+        "Executive-ready overview page for top-line operational monitoring",
+        "Diagnostic views for operator performance and regional underperformance analysis",
+        "Reusable dashboard asset for portfolio presentation and stakeholder walkthrough",
+        "Clear KPI storytelling that supports both screening interviews and deeper case discussion"
+      ],
+
+      metrics: [
+        "Search Volume",
+        "Booking Volume",
+        "Booking Conversion Rate",
+        "Completion Rate",
+        "Cancellation Rate",
+        "Operator Performance Score",
+        "Regional Revenue",
+        "Daily KPI Trend"
+      ],
+
+      tools: ["SQL", "Python", "Looker Studio", "Dashboard Design"],
+
+      insight:
+        "The key value of this dashboard is not just showing whether bookings went up or down. It shows where the business is leaking performance: which funnel stage loses users, which operators convert demand poorly, and which regions carry structural cancellation or execution issues. That makes the dashboard useful for action, not only reporting.",
+
+      image: "images/vexere-cover.png",
+      placeholder: "Vexere Ops",
+
+      codeTitle: "Operator Performance & Funnel Monitoring Query",
+      codeSnippet: `SELECT
+  booking_date,
+  region,
+  operator_name,
+  COUNT(DISTINCT search_id) AS total_searches,
+  COUNT(DISTINCT booking_id) AS total_bookings,
+  SUM(CASE WHEN booking_status = 'completed' THEN 1 ELSE 0 END) AS completed_bookings,
+  SUM(CASE WHEN booking_status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_bookings,
+  ROUND(COUNT(DISTINCT booking_id) * 1.0 / NULLIF(COUNT(DISTINCT search_id), 0), 4) AS booking_conversion_rate,
+  ROUND(SUM(CASE WHEN booking_status = 'cancelled' THEN 1 ELSE 0 END) * 1.0 / NULLIF(COUNT(DISTINCT booking_id), 0), 4) AS cancellation_rate
+FROM mart_vexere_booking_ops
+GROUP BY booking_date, region, operator_name
+ORDER BY booking_date DESC, total_bookings DESC;`
+    },
+    {
       id: "pizza-xm",
       domain: "QSR / Restaurant Ops",
       title: "Pizza Hut XM Analytics",
@@ -390,7 +489,10 @@ ORDER BY event_date DESC;`
 
   const projectsGrid = document.getElementById("projects-grid");
   const hoverPopup = document.getElementById("project-hover-popup");
+  const projectsPagination = document.getElementById("projects-pagination");
 
+  const PROJECTS_PER_PAGE = 6;
+  let currentProjectPage = 1;
   const modal = document.getElementById("project-modal");
   const modalCloseBtn = document.getElementById("modal-close-btn");
   const modalImage = document.getElementById("modal-image");
@@ -427,8 +529,81 @@ ORDER BY event_date DESC;`
       .replaceAll("'", "&#039;");
   }
 
+  function getTotalProjectPages() {
+    return Math.ceil(projectsData.length / PROJECTS_PER_PAGE);
+  }
+
+  function getVisibleProjects() {
+    const startIndex = (currentProjectPage - 1) * PROJECTS_PER_PAGE;
+    const endIndex = startIndex + PROJECTS_PER_PAGE;
+    return projectsData.slice(startIndex, endIndex);
+  }
+
+  function goToProjectPage(page) {
+    const totalPages = getTotalProjectPages();
+    currentProjectPage = Math.max(1, Math.min(page, totalPages));
+    hideHoverPopup();
+    renderProjects();
+    attachProjectEvents();
+
+    const projectsSection = document.getElementById("projects");
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function renderProjectPagination() {
+    if (!projectsPagination) return;
+
+    const totalPages = getTotalProjectPages();
+
+    if (totalPages <= 1) {
+      projectsPagination.innerHTML = "";
+      return;
+    }
+
+    let buttonsHtml = `
+    <button
+      class="project-page-btn"
+      data-page-action="prev"
+      ${currentProjectPage === 1 ? "disabled" : ""}
+      aria-label="Previous projects page"
+    >
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+  `;
+
+    for (let page = 1; page <= totalPages; page++) {
+      buttonsHtml += `
+      <button
+        class="project-page-btn ${page === currentProjectPage ? "is-active" : ""}"
+        data-page="${page}"
+        aria-label="Go to projects page ${page}"
+        aria-current="${page === currentProjectPage ? "page" : "false"}"
+      >
+        ${page}
+      </button>
+    `;
+    }
+
+    buttonsHtml += `
+    <button
+      class="project-page-btn"
+      data-page-action="next"
+      ${currentProjectPage === totalPages ? "disabled" : ""}
+      aria-label="Next projects page"
+    >
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  `;
+
+    projectsPagination.innerHTML = buttonsHtml;
+  }
+
   function renderProjects() {
-    const html = projectsData
+    const visibleProjects = getVisibleProjects();
+
+    const html = visibleProjects
       .map((project) => {
         const mediaHtml = project.image
           ? `
@@ -501,6 +676,7 @@ ORDER BY event_date DESC;`
       .join("");
 
     projectsGrid.innerHTML = html;
+    renderProjectPagination();
   }
 
   function getProjectById(projectId) {
@@ -755,7 +931,29 @@ ORDER BY event_date DESC;`
 
   hoverPopup.addEventListener("mouseenter", clearHideTimer);
   hoverPopup.addEventListener("mouseleave", scheduleHideHoverPopup);
+  if (projectsPagination) {
+    projectsPagination.addEventListener("click", (event) => {
+      const button = event.target.closest(".project-page-btn");
+      if (!button || button.disabled) return;
 
+      const action = button.dataset.pageAction;
+      const page = Number(button.dataset.page);
+
+      if (action === "prev") {
+        goToProjectPage(currentProjectPage - 1);
+        return;
+      }
+
+      if (action === "next") {
+        goToProjectPage(currentProjectPage + 1);
+        return;
+      }
+
+      if (page) {
+        goToProjectPage(page);
+      }
+    });
+  }
   tabButtons.forEach((button) => {
     button.addEventListener("click", () => {
       setActiveTab(button.dataset.tabTarget);
