@@ -565,6 +565,62 @@ button {
   color: #0f172a;
 }
 
+.project-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.project-external-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.project-external-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.28);
+}
+
+.project-action-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.project-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
+}
+
 .projects-pagination {
   margin-top: 24px;
   display: flex;
@@ -873,7 +929,7 @@ button {
   margin-bottom: 26px;
 }
 
-.modal-section+.modal-section {
+.modal-section + .modal-section {
   margin-top: 24px;
 }
 
@@ -893,7 +949,7 @@ button {
   color: #475569;
 }
 
-.modal-list li+li {
+.modal-list li + li {
   margin-top: 8px;
 }
 
@@ -996,7 +1052,6 @@ body.modal-open {
 }
 
 @media (max-width: 640px) {
-
   .container,
   .narrow {
     width: min(100% - 28px, 1140px);

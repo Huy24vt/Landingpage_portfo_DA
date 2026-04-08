@@ -100,6 +100,107 @@ GROUP BY booking_date, region, operator_name
 ORDER BY booking_date DESC, total_bookings DESC;`
     },
     {
+      id: "rca-ka-fashion-otd",
+      domain: "Logistics / Operations Analytics",
+      title: "KA_Fashion OTD Decline RCA",
+      shortDescription:
+        "Root-cause analysis of a final 14-day On-time Delivery drop, supported by an interactive monitoring dashboard and a business-style diagnostic report.",
+      hoverDescription:
+        "A logistics RCA case showing how volume spike, hub overload, and segment concentration drove OTD deterioration for a key account.",
+      businessQuestion:
+        "Why did KA_Fashion OTD fall below SLA in the final 14 days, and which hubs and segments explained most of the late orders?",
+      proofLine:
+        "What this case shows: KPI decomposition, SLA-gap tracking, hub-level RCA, segment contribution analysis, and action-oriented operations recommendations.",
+      stackLine: "Python • Pandas • Plotly • HTML/CSS/JS",
+
+      reportUrl: "https://huy24vt.github.io/RCA-KA_Fashion-OTD-Decline/",
+      reportLabel: "View RCA Report",
+
+      liveDashboardUrl: "https://huy24vt.github.io/RCA-KA_Fashion-OTD-Decline_Dashboard/",
+      liveDashboardLabel: "Live Dashboard",
+
+      summary:
+        "This project investigates why On-time Delivery for KA_Fashion dropped sharply in the final 14 days of the analysis window. The case combines two deliverables: a business-style RCA report that explains the issue step by step, and an interactive dashboard built for monitoring, drill-down, and operational diagnosis.",
+
+      problem:
+        "OTD fell below SLA for a key account, but a top-line KPI drop alone was not enough to identify the real problem. The business needed to know whether the decline came from a broad network issue or from a concentrated operational bottleneck tied to specific hubs, service types, and district segments.",
+
+      architecture: [
+        "Structured the case into two layers: monitoring dashboard for detection and RCA report for diagnosis",
+        "Built KPI views for OTD, SLA gap, failure rate, complaint rate, return rate, and average delay",
+        "Connected shipment-level data with hub daily operational signals such as utilization and backlog",
+        "Designed the analysis flow from overall trend to hub concentration to segment-level breakdown"
+      ],
+
+      parsingLogic: [
+        "Defined pre-window versus post-window comparison to isolate the final 14-day deterioration",
+        "Standardized OTD and SLA-gap logic so performance could be compared across time and segments",
+        "Segmented shipments by region, hub, district type, and service type to locate concentration points",
+        "Quantified which segments contributed the most late orders instead of only showing rates"
+      ],
+
+      dataAccess: [
+        "Used shipment-level fact data as the main table for delivery outcome analysis",
+        "Joined hub daily ops data to bring in utilization and backlog context",
+        "Mapped SLA targets as reference for gap analysis",
+        "Prepared dashboard-friendly outputs for trend, contribution, heatmap, and diagnostic views"
+      ],
+
+      analyticsModules: [
+        "Overall KPI Monitoring: tracked OTD, SLA gap, failure, complaint, return, and delay movement",
+        "Hub Contribution Analysis: identified which hubs explained most of the post-window late orders",
+        "Operational Stress Analysis: compared hub utilization and late-rate to show capacity strain",
+        "Segment Drill-down: evaluated district type and service type combinations behind poor OTD",
+        "Cycle-Time Diagnosis: reviewed pickup, sort, linehaul, and last-mile timing to support RCA"
+      ],
+
+      optimization: [
+        "Separated monitoring and diagnosis so stakeholders can first detect the issue, then investigate drivers",
+        "Used contribution logic instead of only ranking by rate, so impact and scale are both visible",
+        "Built a lightweight static dashboard for GitHub Pages deployment",
+        "Kept the narrative business-oriented so the case works as both portfolio content and interview walkthrough"
+      ],
+
+      outputLayer: [
+        "Interactive dashboard for KPI monitoring and operational drill-down",
+        "Narrative RCA report for stakeholder-style explanation and recommendation framing",
+        "Portfolio-ready case study showing both diagnostic depth and dashboarding capability",
+        "Reusable structure for logistics, operations, and service-quality analytics interviews"
+      ],
+
+      metrics: [
+        "OTD",
+        "SLA Gap",
+        "Failure Rate",
+        "Complaint Rate",
+        "Return Rate",
+        "Average Delay Days",
+        "Hub Utilization",
+        "Late-Order Contribution"
+      ],
+
+      tools: ["Python", "Pandas", "Plotly", "HTML", "CSS", "JavaScript"],
+
+      insight:
+        "The OTD decline was not a broad network-wide deterioration. It was concentrated in overloaded hubs, especially HCM_D7 and HN_LongBien, then amplified in outer-district and standard-service shipments. That means the right response is targeted operational rebalancing, not generic overall action.",
+      image: "images/rca_ghn_otd.png",
+      placeholder: "KA_Fashion RCA",
+
+      codeTitle: "KPI Logic Example",
+      codeSnippet: `SELECT
+  period,
+  COUNT(*) AS orders,
+  AVG(on_time_flag) AS otd,
+  AVG(failure_flag) AS failure_rate,
+  AVG(complaint_flag) AS complaint_rate,
+  AVG(return_flag) AS return_rate,
+  AVG(delay_days) AS avg_delay_days
+FROM shipments
+WHERE account = 'KA_Fashion'
+GROUP BY period
+ORDER BY period;`
+    },
+    {
       id: "pizza-xm",
       domain: "QSR / Restaurant Ops",
       title: "Pizza Hut XM Analytics",
@@ -619,19 +720,37 @@ ORDER BY event_date DESC;`
             </div>
           `;
 
-        const liveDashboardHtml = project.liveDashboardUrl
-          ? `
-              <a
-                href="${escapeHtml(project.liveDashboardUrl)}"
-                class="project-external-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open ${escapeHtml(project.liveDashboardLabel || "Live dashboard")} for ${escapeHtml(project.title)}"
-              >
-                <strong>${escapeHtml(project.liveDashboardLabel || "Live Dashboard")}</strong>
-              </a>
-            `
-          : "";
+        const externalLinks = [];
+
+        if (project.reportUrl) {
+          externalLinks.push(`
+    <a
+      href="${escapeHtml(project.reportUrl)}"
+      class="project-external-link"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open ${escapeHtml(project.reportLabel || "Report")} for ${escapeHtml(project.title)}"
+    >
+      <strong>${escapeHtml(project.reportLabel || "View Report")}</strong>
+    </a>
+  `);
+        }
+
+        if (project.liveDashboardUrl) {
+          externalLinks.push(`
+    <a
+      href="${escapeHtml(project.liveDashboardUrl)}"
+      class="project-external-link"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open ${escapeHtml(project.liveDashboardLabel || "Live dashboard")} for ${escapeHtml(project.title)}"
+    >
+      <strong>${escapeHtml(project.liveDashboardLabel || "Live Dashboard")}</strong>
+    </a>
+  `);
+        }
+
+        const projectLinksHtml = externalLinks.join("");
 
         return `
           <article
@@ -667,7 +786,7 @@ ORDER BY event_date DESC;`
 
               <div class="project-card-actions">
                 <span class="project-link">Open case study</span>
-                ${liveDashboardHtml}
+                ${projectLinksHtml}
               </div>
             </div>
           </article>
@@ -838,20 +957,38 @@ ORDER BY event_date DESC;`
 
     modalMetrics.innerHTML = createTags(project.metrics || []);
     modalTools.innerHTML = createTags(project.tools || []);
-
     if (modalProjectLinks) {
+      const modalLinks = [];
+
+      if (project.reportUrl) {
+        modalLinks.push(`
+      <a
+        href="${escapeHtml(project.reportUrl)}"
+        class="project-action-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <strong>${escapeHtml(project.reportLabel || "View Report")}</strong>
+      </a>
+    `);
+      }
+
       if (project.liveDashboardUrl) {
+        modalLinks.push(`
+      <a
+        href="${escapeHtml(project.liveDashboardUrl)}"
+        class="project-action-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <strong>${escapeHtml(project.liveDashboardLabel || "Open Live Dashboard")}</strong>
+      </a>
+    `);
+      }
+
+      if (modalLinks.length > 0) {
         modalProjectLinks.classList.remove("hidden");
-        modalProjectLinks.innerHTML = `
-          <a
-            href="${escapeHtml(project.liveDashboardUrl)}"
-            class="project-action-btn"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <strong>${escapeHtml(project.liveDashboardLabel || "Open Live Dashboard")}</strong>
-          </a>
-        `;
+        modalProjectLinks.innerHTML = modalLinks.join("");
       } else {
         modalProjectLinks.classList.add("hidden");
         modalProjectLinks.innerHTML = "";
